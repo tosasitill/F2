@@ -1,4 +1,4 @@
-name: 提取 vendor.img
+name: 云端提取指定分区
 
 on:
   workflow_dispatch:
@@ -7,6 +7,10 @@ on:
         description: 'ROM 下载直链'
         required: true
         default: 'https://mirrorbits.lineageos.org/full/tissot/20230425/lineage-19.1-20230425-nightly-tissot-signed.zip'
+      part:
+        description: '提取分区'
+        required: true
+        default: 'vendor'
 
 
 jobs:
@@ -29,7 +33,7 @@ jobs:
       - name: 提取镜像并上传至 TMP
         run: |
           cd ~
-          git clone --recurse-submodules https://github.com/tosasitill/Firmware_extractor.git -b vendor
+          git clone --recurse-submodules https://github.com/tosasitill/Firmware_extractor.git -b "${{ github.event.inputs.part }}"
           cd Firmware_extractor
           aria2c -s 10 -x 10 -d . -o firmware.zip "${{ github.event.inputs.rom_url }}"
           ./extractor.sh firmware.zip
